@@ -953,7 +953,7 @@ class HomeInfoCard extends HTMLElement {
 
     const stateObj = this._hass.states[cfg.entity];
     if (!stateObj) {
-      this._els.temp.textContent = "—";
+      this._els.temp.textContent = "-";
       this._els.cond.textContent = `${cfg.entity} unavailable`;
       this._els.ic.innerHTML = "";
     } else {
@@ -962,7 +962,7 @@ class HomeInfoCard extends HTMLElement {
         cfg.text.degree;
       const temp = stateObj.attributes && stateObj.attributes.temperature;
       this._els.temp.textContent =
-        temp === undefined || temp === null ? "—" : `${Math.round(temp)}${unit}`;
+        temp === undefined || temp === null ? "-" : `${Math.round(temp)}${unit}`;
       this._els.cond.textContent =
         localized(
           this._hass,
@@ -1128,7 +1128,7 @@ class HomeInfoCard extends HTMLElement {
             ${icon(d.condition)}
             <span class="lo">${lo === null ? "" : lo + esc(text.degree)}</span>
             <span class="track"><i style="left:${left.toFixed(1)}%;right:${right.toFixed(1)}%"></i></span>
-            <span class="hi">${hi === null ? "—" : hi + esc(text.degree)}</span>
+            <span class="hi">${hi === null ? "-" : hi + esc(text.degree)}</span>
           </div>`;
       })
       .join("");
