@@ -523,11 +523,26 @@ class HomeInfoCard extends HTMLElement {
     return (this._hass && this._hass.locale && this._hass.locale.language) || "en-GB";
   }
 
+  /* The profile's time format, read the way Home Assistant's own cards read
+   * it: 12 or 24 as chosen, and for "language" or "system" whatever that
+   * language, or the browser, does with ten in the evening. */
   _use24h() {
-    const fmt = this._hass && this._hass.locale && this._hass.locale.time_format;
-    if (fmt === "12") return false;
-    if (fmt === "24") return true;
-    return true;
+    const l = (this._hass && this._hass.locale) || {};
+    if (l.time_format === "12") return false;
+    if (l.time_format === "24") return true;
+    const lang = l.time_format === "system" ? undefined : this._locale();
+    /* Asked once per answer: toLocaleString builds a formatter, and this
+     * runs on every update. */
+    const key = `${l.time_format}|${lang}`;
+    if (this._h24Key !== key) {
+      this._h24Key = key;
+      try {
+        this._h24 = !new Date(2023, 0, 1, 22).toLocaleString(lang).includes("10");
+      } catch (err) {
+        this._h24 = true;
+      }
+    }
+    return this._h24;
   }
 
   _build() {
@@ -930,9 +945,9 @@ class HomeInfoCard extends HTMLElement {
     if (face !== this._face) {
       this._face = face;
       this._els.time.textContent = dateFormat(`hm|${h12 ? 12 : 24}`, locale, {
-        hour: "2-digit",
+        hour: "numeric", // "7:00 PM" in 12 hours, as Home Assistant writes it
         minute: "2-digit",
-        hour12: h12,
+        hourCycle: h12 ? "h12" : "h23",
       }).format(now);
       this._els.date.textContent = dateFormat("full", locale, {
         weekday: "long",
