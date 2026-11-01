@@ -953,7 +953,7 @@ class HomeInfoCard extends HTMLElement {
 
     const stateObj = this._hass.states[cfg.entity];
     if (!stateObj) {
-      this._els.temp.textContent = "-";
+      this._els.temp.textContent = "?";
       this._els.cond.textContent = `${cfg.entity} unavailable`;
       this._els.ic.innerHTML = "";
     } else {
@@ -962,7 +962,8 @@ class HomeInfoCard extends HTMLElement {
         cfg.text.degree;
       const temp = stateObj.attributes && stateObj.attributes.temperature;
       this._els.temp.textContent =
-        temp === undefined || temp === null ? "-" : `${Math.round(temp)}${unit}`;
+        // "?" for a reading that cannot be seen; the forecast's "-" is a day without a figure.
+        temp === undefined || temp === null ? "?" : `${Math.round(temp)}${unit}`;
       this._els.cond.textContent =
         localized(
           this._hass,
