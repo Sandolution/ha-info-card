@@ -190,6 +190,14 @@ function localized(hass, key, override, fallback) {
  * inside a sentence, and this is a column heading. Capitalising the first
  * character is right for the languages that capitalise at all and harmless for
  * the ones that do not, since they have no uppercase form to get wrong. */
+/* The forecast is built as markup, and the condition names in it come from
+ * translations, the card's text and the weather integration. */
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])
+  );
+}
+
 /* Formatters, built once and kept.
  *
  * Loading a locale's date data costs about a millisecond on a wall tablet's
@@ -1084,12 +1092,12 @@ class HomeInfoCard extends HTMLElement {
           d.condition || ""
         );
         return `
-          <div class="day${warm}" title="${title}">
-            <span class="name">${name}</span>
+          <div class="day${warm}" title="${esc(title)}">
+            <span class="name">${esc(name)}</span>
             ${icon(d.condition)}
-            <span class="lo">${lo === null ? "" : lo + text.degree}</span>
+            <span class="lo">${lo === null ? "" : lo + esc(text.degree)}</span>
             <span class="track"><i style="left:${left.toFixed(1)}%;right:${right.toFixed(1)}%"></i></span>
-            <span class="hi">${hi === null ? "—" : hi + text.degree}</span>
+            <span class="hi">${hi === null ? "—" : hi + esc(text.degree)}</span>
           </div>`;
       })
       .join("");
