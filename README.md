@@ -117,6 +117,10 @@ With the default three days, in a narrower column:
 
 Home Assistant 2024.11 or newer.
 
+## Built with
+
+[Claude Code](https://claude.com/claude-code).
+
 ## License
 
 [MIT](LICENSE)
