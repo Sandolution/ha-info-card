@@ -1150,6 +1150,48 @@ class HomeInfoCard extends HTMLElement {
       .join("");
   }
 
+  /* The visual editor. Home Assistant draws this as a form, the same one its
+   * own cards use, and keeps any key the form doesn't show - so `text` and
+   * anything else written in YAML survives an edit. A default is given where
+   * the form would otherwise show an empty box or an unticked switch for a
+   * setting that is on. */
+  static getConfigForm() {
+    const labels = {
+      entity: "Weather",
+      forecast_days: "Forecast days",
+      greeting: "Greeting",
+      animate: "Animation",
+      greeting_entity: "Instead of the greeting, show",
+      greeting_exclude: "Greet without a name for logins containing",
+    };
+    const helpers = {
+      greeting_entity: "An entity whose state replaces the greeting while it has one.",
+      greeting_exclude: "Ignoring case. For a wall tablet with its own login.",
+    };
+    return {
+      schema: [
+        { name: "entity", required: true, selector: { entity: { domain: "weather" } } },
+        {
+          name: "forecast_days",
+          default: DEFAULTS.forecast_days,
+          selector: { number: { min: 1, max: 14, mode: "box" } },
+        },
+        {
+          type: "grid",
+          name: "",
+          schema: [
+            { name: "greeting", default: true, selector: { boolean: {} } },
+            { name: "animate", default: true, selector: { boolean: {} } },
+          ],
+        },
+        { name: "greeting_entity", selector: { entity: {} } },
+        { name: "greeting_exclude", selector: { text: { multiple: true } } },
+      ],
+      computeLabel: (s) => labels[s.name],
+      computeHelper: (s) => helpers[s.name],
+    };
+  }
+
   static getStubConfig(hass) {
     const first = Object.keys((hass && hass.states) || {}).find((e) =>
       e.startsWith("weather.")

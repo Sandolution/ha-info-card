@@ -33,6 +33,10 @@ each other.
 
 ## Configuration
 
+Add it from the dashboard's **Add card** dialog and every option below can be
+set in the card editor, except `text`, which is written in the code editor. The
+editor keeps whatever it doesn't show.
+
 ```yaml
 type: custom:home-info-card
 entity: weather.home
