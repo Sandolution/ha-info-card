@@ -239,6 +239,12 @@ function relativeDay(locale, offset, fallback) {
   return fallback;
 }
 
+/* Midnight of the date's day in the viewer's time zone, as a number to compare
+ * and subtract. NaN for a date that doesn't parse. */
+function localDay(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+}
+
 /* One name is as likely as a list - `greeting_exclude: tablet` is how YAML
  * reads naturally - so both are taken. Kept lowercase for matching, and empty
  * names are dropped: every login contains "", so one would exclude everybody. */
@@ -1032,7 +1038,13 @@ class HomeInfoCard extends HTMLElement {
 
   _renderForecast() {
     if (!this._els || !this._config) return;
-    const days = (this._forecast || []).slice(0, this._config.forecast_days);
+    /* Days that have ended are left out. The card keeps the forecast it was
+     * last sent until the integration sends another, so for a while after
+     * midnight its first day is yesterday. */
+    const today = localDay(new Date());
+    const days = (this._forecast || [])
+      .filter((d) => localDay(new Date(d.datetime)) >= today)
+      .slice(0, this._config.forecast_days);
     const host = this._els.forecast;
 
     /* A forecast changes when the weather integration says so - every half
@@ -1046,6 +1058,7 @@ class HomeInfoCard extends HTMLElement {
      * would hold the English fallback for as long as the forecast did not
      * move. */
     const sig = JSON.stringify([
+      today,
       this._config.forecast_days,
       this._locale(),
       days.map((d) => [
@@ -1082,13 +1095,17 @@ class HomeInfoCard extends HTMLElement {
     const hass = this._hass;
     const locale = this._locale();
     host.innerHTML = days
-      .map((d, i) => {
+      .map((d) => {
         const date = new Date(d.datetime);
-        // A word set in `text` wins; the browser's is for when there is none.
+        /* Named by date rather than by row: some integrations stop sending
+         * today in the evening, and their first row is tomorrow. Rounded
+         * because the days around a clock change are 23 and 25 hours long.
+         * A word set in `text` wins; the browser's is for when there is none. */
+        const offset = Math.round((localDay(date) - today) / 86400000);
         const name =
-          i === 0
+          offset === 0
             ? text.today != null ? text.today : relativeDay(locale, 0, "Today")
-            : i === 1
+            : offset === 1
             ? text.tomorrow != null ? text.tomorrow : relativeDay(locale, 1, "Tomorrow")
             : dateFormat("wd", locale, { weekday: "long" }).format(date);
         const hi = typeof d.temperature === "number" ? Math.round(d.temperature) : null;
