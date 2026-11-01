@@ -1204,7 +1204,7 @@ class HomeInfoCard extends HTMLElement {
   }
 }
 
-const CARD_BUILD = "2026-10-09a";
+const CARD_BUILD = "1.0.0";
 
 if (!customElements.get("home-info-card")) {
   customElements.define("home-info-card", HomeInfoCard);
