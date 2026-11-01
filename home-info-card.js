@@ -1084,11 +1084,12 @@ class HomeInfoCard extends HTMLElement {
     host.innerHTML = days
       .map((d, i) => {
         const date = new Date(d.datetime);
+        // A word set in `text` wins; the browser's is for when there is none.
         const name =
           i === 0
-            ? relativeDay(locale, 0, text.today || "Today")
+            ? text.today != null ? text.today : relativeDay(locale, 0, "Today")
             : i === 1
-            ? relativeDay(locale, 1, text.tomorrow || "Tomorrow")
+            ? text.tomorrow != null ? text.tomorrow : relativeDay(locale, 1, "Tomorrow")
             : dateFormat("wd", locale, { weekday: "long" }).format(date);
         const hi = typeof d.temperature === "number" ? Math.round(d.temperature) : null;
         const lo = typeof d.templow === "number" ? Math.round(d.templow) : null;
