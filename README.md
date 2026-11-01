@@ -47,7 +47,7 @@ entity: weather.home
 | `forecast_days` | a whole number, `1` or more | `3` | Days in the forecast, one row each, starting today. Never more than the weather integration provides. |
 | `greeting` | `true` or `false` | `true` | Shows "Good morning, Sam" under the clock, with the first name of whoever is logged in. |
 | `greeting_entity` | any entity | none | While this entity's state is something other than `unknown`, `unavailable` or empty, that state is shown instead of the greeting, as it is. Use it for something more pressing than "Good evening", such as a template sensor. |
-| `greeting_exclude` | a list of texts | `["tablet"]` | Logins whose user name contains one of these, ignoring case, get the greeting without a name. A wall tablet isn't a person to say good morning to. Use `[]` to greet everybody by name. |
+| `greeting_exclude` | a text, or a list of texts | none | Logins whose user name contains one of these, ignoring case, get the greeting without a name. For a wall tablet with its own login: `greeting_exclude: tablet` keeps it from saying "Good morning, Tablet". |
 | `animate` | `true` or `false` | `true` | `false` makes the card completely still. See [Motion](#motion). |
 | `text` | a mapping, see [text](#text) | | The card's own words. |
 

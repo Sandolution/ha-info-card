@@ -41,7 +41,7 @@
 //                  more urgent to say than "Good evening". Hidden entirely when
 //                  unset, which keeps the slot reserved without a placeholder.
 //   greeting:      bool, default true — personal greeting on the status line
-//   greeting_exclude: list of names, default ["tablet"] — matched
+//   greeting_exclude: a name or a list of names, default none — matched
 //                  case-insensitively as a substring; these logins get the
 //                  greeting with no name
 //   forecast_days: integer, default 3
@@ -119,7 +119,7 @@ const DEFAULTS = {
   forecast_days: 3,
   animate: true,
   greeting: true,
-  greeting_exclude: ["tablet"],
+  greeting_exclude: [],
   greeting_entity: null,
 };
 
@@ -237,6 +237,21 @@ function relativeDay(locale, offset, fallback) {
     /* A locale it took but cannot format this offset in. */
   }
   return fallback;
+}
+
+/* One name is as likely as a list - `greeting_exclude: tablet` is how YAML
+ * reads naturally - so both are taken. Kept lowercase for matching, and empty
+ * names are dropped: every login contains "", so one would exclude everybody. */
+function excludeList(given) {
+  if (given == null) return [];
+  const list = Array.isArray(given) ? given : [given];
+  if (!list.every((n) => typeof n === "string" || typeof n === "number")) {
+    throw new Error(
+      "home-info-card: greeting_exclude is a name or a list of names, not " +
+        `${JSON.stringify(given)}.`
+    );
+  }
+  return list.map((n) => String(n).trim().toLowerCase()).filter(Boolean);
 }
 
 /* Merge the user's subset over the defaults, one level of nesting deep, and
@@ -397,6 +412,7 @@ class HomeInfoCard extends HTMLElement {
     const previousEntity = this._config && this._config.entity;
     this._config = { ...DEFAULTS, ...config };
     this._config.text = mergeText(DEFAULT_TEXT, config.text, "text");
+    this._config.greeting_exclude = excludeList(config.greeting_exclude);
     /* The forecast's signature describes what was drawn from the old config,
      * so it says nothing about this one. Dropped rather than extended: every
      * word on those three rows is configurable, and a signature listing all
@@ -974,11 +990,8 @@ class HomeInfoCard extends HTMLElement {
     const user = this._hass && this._hass.user;
     const name = user && user.name;
     if (!name) return null;
-    const excluded = (this._config.greeting_exclude || []).map((n) =>
-      String(n).toLowerCase()
-    );
     const lower = name.toLowerCase();
-    if (excluded.some((term) => lower.includes(term))) return null;
+    if (this._config.greeting_exclude.some((term) => lower.includes(term))) return null;
     // Display names are often a full name; the first word reads better.
     return name.trim().split(/\s+/)[0];
   }
