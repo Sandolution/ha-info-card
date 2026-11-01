@@ -38,45 +38,57 @@ type: custom:home-info-card
 entity: weather.home
 ```
 
-| Option | Default | |
-|---|---|---|
-| `entity` | | **Required.** A `weather.*` entity with a daily forecast. |
-| `forecast_days` | `3` | Days in the forecast, one row each. |
-| `greeting` | `true` | "Good morning, Sam" under the clock, with the first name of whoever is logged in. |
-| `greeting_entity` | | Any entity. While it has a state, that state replaces the greeting. Use it for something more pressing than "Good evening". |
-| `greeting_exclude` | `["tablet"]` | Logins that get the greeting without a name, matched as part of the user name, case-insensitive. A wall tablet isn't a person to say good morning to. |
-| `animate` | `true` | `false` makes the card completely still. |
-| `text` | see below | The card's own words. |
+### Options
+
+| Option | Values | Default | What it does |
+|---|---|---|---|
+| `type` | `custom:home-info-card` | | **Required.** |
+| `entity` | a `weather.*` entity | | **Required.** The weather shown on the card. Anything that isn't a `weather.` entity is a configuration error. The forecast rows need an integration that provides a daily forecast. |
+| `forecast_days` | a whole number, `1` or more | `3` | Days in the forecast, one row each, starting today. Never more than the weather integration provides. |
+| `greeting` | `true` or `false` | `true` | Shows "Good morning, Sam" under the clock, with the first name of whoever is logged in. |
+| `greeting_entity` | any entity | none | While this entity's state is something other than `unknown`, `unavailable` or empty, that state is shown instead of the greeting, as it is. Use it for something more pressing than "Good evening", such as a template sensor. |
+| `greeting_exclude` | a list of texts | `["tablet"]` | Logins whose user name contains one of these, ignoring case, get the greeting without a name. A wall tablet isn't a person to say good morning to. Use `[]` to greet everybody by name. |
+| `animate` | `true` or `false` | `true` | `false` makes the card completely still. See [Motion](#motion). |
+| `text` | a mapping, see [text](#text) | | The card's own words. |
 
 The greeting says morning from 5:00, afternoon from 12:00, evening from 18:00
-and night from 23:00.
+and night from 23:00, in the browser's time. With `greeting: false` and no
+`greeting_entity` state, the line under the clock is left out.
 
 ### text
 
-Any subset; the rest keep their defaults. An unknown key is an error rather
-than being ignored.
+A mapping of the words below; give only the ones you want to change. An unknown
+key is a configuration error rather than being ignored.
+
+| Key | Values | Default | What it is |
+|---|---|---|---|
+| `today` | text | the browser's word for today | The first forecast row's label. |
+| `tomorrow` | text | the browser's word for tomorrow | The second forecast row's label. |
+| `degree` | text | `°` | The unit after the forecast temperatures. Also used for the current temperature when the weather entity reports no unit. |
+| `greeting` | a mapping of `morning`, `afternoon`, `evening` and `night` | `Good morning`, `Good afternoon`, `Good evening`, `Good night` | The greeting for each part of the day. |
+| `conditions` | a mapping of weather conditions to text | Home Assistant's translation | Your own word for a condition, used for the current weather and the forecast. |
+
+The condition keys are `clear-night`, `sunny`, `partlycloudy`, `cloudy`,
+`rainy`, `pouring`, `snowy`, `snowy-rainy`, `fog`, `lightning`,
+`lightning-rainy`, `windy`, `windy-variant`, `hail` and `exceptional`.
 
 ```yaml
 text:
   degree: °
   greeting:
-    morning: Good morning
-    afternoon: Good afternoon
-    evening: Good evening
-    night: Good night
+    morning: Goedemorgen
+    afternoon: Goedemiddag
+    evening: Goedenavond
+    night: Goedenacht
   conditions:
-    snowy-rainy: Sleet
+    snowy-rainy: Natte sneeuw
 ```
 
 Only the greeting and the degree sign have defaults of their own. Today and
-tomorrow come from the browser (`Intl.RelativeTimeFormat`), and the weather
-conditions come from Home Assistant's translations, so the card speaks your
-language without configuration. Set a condition to use your own word instead,
-for example "Sleet" where Home Assistant says "Snowy, rainy".
-
-The condition keys are `clear-night`, `sunny`, `partlycloudy`, `cloudy`,
-`rainy`, `pouring`, `snowy`, `snowy-rainy`, `fog`, `lightning`,
-`lightning-rainy`, `windy`, `windy-variant`, `hail` and `exceptional`.
+tomorrow come from the browser (`Intl.RelativeTimeFormat`), weekday names and
+the date from the browser too, and the weather conditions from Home
+Assistant's translations, so the card speaks your language without
+configuration.
 
 ## Forecast
 
