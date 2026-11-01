@@ -1,7 +1,7 @@
 // home-info-card
 //
 // The dashboard hero: date, time, an optional status line, current conditions
-// and a multi-day forecast band — composed as one card so the typography and
+// and a multi-day forecast band, composed as one card so the typography and
 // spacing can be ours rather than assembled from several cards fighting each
 // other.
 //
@@ -23,7 +23,7 @@
 // This runs 24/7 on a wall tablet, so every animation here is transform- or
 // opacity-only (GPU-composited, never triggering layout or paint), uses a
 // handful of nodes rather than a particle system, and is fully suspended when
-// the tab is hidden — a tablet with its screen off animates nothing. Motion is
+// the tab is hidden, so a tablet with its screen off animates nothing. Motion is
 // also disabled outright under prefers-reduced-motion, or via `animate: false`.
 //
 // Three condition-driven layers:
@@ -40,12 +40,12 @@
 //                  line when it has a state, for a sensor that has something
 //                  more urgent to say than "Good evening". Hidden entirely when
 //                  unset, which keeps the slot reserved without a placeholder.
-//   greeting:      bool, default true — personal greeting on the status line
-//   greeting_exclude: a name or a list of names, default none — matched
+//   greeting:      bool, default true: personal greeting on the status line
+//   greeting_exclude: a name or a list of names, default none: matched
 //                  case-insensitively as a substring; these logins get the
 //                  greeting with no name
 //   forecast_days: integer, default 3
-//   animate:       bool, default true — false gives a completely static card
+//   animate:       bool, default true: false gives a completely static card
 //   text:          the card's own words, for translating or rewording. Any
 //                  subset; the rest keep their defaults.
 //
@@ -562,7 +562,7 @@ class HomeInfoCard extends HTMLElement {
           position: relative;
           overflow: hidden;
 
-          /* (A) condition tint — overridden per condition below */
+          /* (A) condition tint, overridden per condition below */
           --tint: 216, 162, 78;
           --tint-alpha: 0.10;
         }
@@ -848,7 +848,7 @@ class HomeInfoCard extends HTMLElement {
         }
         .day svg { width: 22px; height: 22px; color: var(--secondary-text-color); }
         .day.warm svg { color: var(--primary-color); }
-        /* Forecast glyphs stay still — three animating icons in a row reads as
+        /* Forecast glyphs stay still: three animating icons in a row reads as
            noise, and that row is a comparison, not a live reading. */
         .day svg g { animation: none !important; }
         .lo, .hi {

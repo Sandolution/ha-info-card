@@ -19,7 +19,7 @@ each other.
 
 ### HACS
 
-1. In HACS, open the menu (⋮) → **Custom repositories**.
+1. In HACS, open the menu (⋮) > **Custom repositories**.
 2. Add `https://github.com/Sandolution/ha-info-card` with the type **Dashboard**.
 3. Install **Home Info Card**. HACS adds the dashboard resource for you.
 4. Reload the browser.
@@ -27,7 +27,7 @@ each other.
 ### Manual
 
 1. Download `home-info-card.js` from this repository into `config/www/`.
-2. Add it as a resource: **Settings → Dashboards → ⋮ → Resources**, URL
+2. Add it as a resource: **Settings > Dashboards > ⋮ > Resources**, URL
    `/local/home-info-card.js`, type **JavaScript module**.
 3. Reload the browser.
 
